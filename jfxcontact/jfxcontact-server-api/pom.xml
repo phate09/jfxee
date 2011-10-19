@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- change this to match your project details -->
+  <parent>
+    <artifactId>jfxcontact</artifactId>
+    <groupId>com.zenjava</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.zenjava</groupId>
+  <artifactId>jfxcontact-server-api</artifactId>
+  <name>JFX Contact - Server API</name>
+
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+
+  <dependencies>
+
+    <!-- Spring Security -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+  </dependencies>
+
+</project>
