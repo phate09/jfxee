@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- change this to match your project details -->
+  <parent>
+    <artifactId>jfxcontact</artifactId>
+    <groupId>com.zenjava</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.zenjava</groupId>
+  <artifactId>jfxcontact-client</artifactId>
+  <name>JFX Contact - Client</name>
+
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <!-- this is needed for MigPane as it is currently not officially released -->
+  <repositories>
+    <repository>
+      <id>snapshot-repository.java.net</id>
+      <name>Java.net Snapshot Repository for Maven</name>
+      <url>https://maven.java.net/content/repositories/snapshots/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+  <dependencies>
+
+    <!-- JFX Contact Modules -->
+
+    <dependency>
+      <groupId>com.zenjava</groupId>
+      <artifactId>jfxcontact-server-api</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- JavaFX -->
+
+    <dependency>
+      <groupId>com.sun.javafx</groupId>
+      <artifactId>javafx</artifactId>
+      <version>2.0.beta</version>
+      <scope>system</scope>
+      <systemPath>C:/Apps/jfx/jfx2.0/rt/lib/jfxrt.jar</systemPath>
+    </dependency>
+
+    <!-- MigLayoutFX2 -->
+
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout</artifactId>
+      <version>3.7.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.tbee</groupId>
+      <artifactId>MigLayoutFX2</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Spring -->
+
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-core</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+
+    <!-- Spring Property Annotations
+    Extended PropertyPlaceHolderConfigurer that injects configuration
+    properties into your Spring components using annotations
+    -->
+    <dependency>
+        <groupId>com.urbanmania</groupId>
+        <artifactId>spring-property-annotations</artifactId>
+        <version>0.1.8</version>
+    </dependency>
+
+    <!-- CGLIB -->
+
+    <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>2.2</version>
+    </dependency>
+
+
+    <!-- Apache Commons -->
+
+    <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.5</version>
+    </dependency>
+
+<!-- JUnit -->
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--Logging -->
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+
+  </dependencies>
+
+</project>
