@@ -1,0 +1,14 @@
+.root {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #cbd0d7 0%, white 100%);
+}
+
+#printBtn {
+    -fx-text-fill: #e4f3fc;
+    -fx-font: 20pt "Tahoma Bold";
+    -fx-padding: 10;
+    -fx-base: #2d4b8e
+}
+
+#printBtn:hover{
+    -fx-base: #395bae;
+}
