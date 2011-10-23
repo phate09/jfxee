@@ -17,11 +17,10 @@ public class SampleApp extends Application
     {
         AnnotationConfigApplicationContext context
                 = new AnnotationConfigApplicationContext(SampleAppFactory.class);
-        SpringFxmlLoader loader = new SpringFxmlLoader(context);
 
-        Parent root = (Parent) loader.load("/sample.fxml", SampleController.class);
-        Scene scene = new Scene(root, 320, 240);
-        scene.getStylesheets().add("/fxmlapp.css");
+        SampleController sampleController = context.getBean(SampleController.class);
+        Scene scene = new Scene((Parent) sampleController.getView(), 320, 240);
+        scene.getStylesheets().add("fxmlapp.css");
         stage.setScene(scene);
         stage.setTitle("JFX2.0 Sprung");
         stage.show();

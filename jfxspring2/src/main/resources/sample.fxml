@@ -4,9 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="root" xmlns:fx="http://javafx.com/fxml">
+<StackPane fx:id="view"
+           fx:controller="com.zenjava.jfxspring.SampleController"
+           xmlns:fx="http://javafx.com/fxml">
     <children>
-        <Button fx:id="printBtn" onAction="controller.print()" />
-        <fx:script>printBtn.text = 'Click Me ' + controller.getPerson().getFirstName() + '!';</fx:script>
+        <Button text="Click Me" fx:id="printBtn" onAction="#print" />
     </children>
 </StackPane>
