@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language javascript?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="view"
+      fx:controller="com.zenjava.jfxspring.WelcomeController"
+      spacing="4"
+      xmlns:fx="http://javafx.com/fxml">
+    <styleClass><String fx:value="welcome"/></styleClass>
+    <children>
+      <Label text="Hit the button to see a welcome message - make sure you 'save' first!"/>
+      <Button text="Show Welcome" onAction="#showWelcome"/>
+      <Label fx:id="welcomeLabel">
+        <styleClass><String fx:value="welcomeLabel"/></styleClass>
+      </Label>
+    </children>
+</VBox>

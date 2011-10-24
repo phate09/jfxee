@@ -1,0 +1,27 @@
+.root {
+    -fx-padding: 10;
+}
+
+.welcome,
+.enterDetails {
+    -fx-padding: 10;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #cbd0d7 0%, white 100%);
+    -fx-border-color: gray;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.button {
+    -fx-text-fill: #e4f3fc;
+    -fx-font: 16pt "Tahoma Bold";
+    -fx-padding: 4;
+    -fx-base: #2d4b8e
+}
+
+.button:hover{
+    -fx-base: #395bae;
+}
+
+.welcomeLabel {
+    -fx-font-size: 18;
+}
