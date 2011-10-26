@@ -14,10 +14,7 @@ public class SampleAppFactory
     @Bean
     public MainController mainController() throws IOException
     {
-        MainController mainController = (MainController) loadController("/Main.fxml");
-        mainController.addPage("Page 1", page1Controller());
-        mainController.addPage("Page 2", page2Controller());
-        return mainController;
+        return (MainController) loadController("/Main.fxml");
     }
 
     @Bean

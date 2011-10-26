@@ -4,11 +4,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:controller="com.zenjava.jfxspring.MainController"
+<BorderPane fx:id="view"
+            fx:controller="com.zenjava.jfxspring.MainController"
             xmlns:fx="http://javafx.com/fxml">
 
+  <styleClass> <String fx:value="welcome"/> </styleClass>
+
   <top>
-    <HBox fx:id="buttonArea"/>
+    <HBox spacing="4">
+      <children>
+        <Button text="Show Page 1" onAction="#showPage1"/>
+        <Button text="Show Page 2" onAction="#showPage2"/>
+      </children>
+    </HBox>
   </top>
 
   <center>

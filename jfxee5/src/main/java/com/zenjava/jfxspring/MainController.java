@@ -1,44 +1,24 @@
 package com.zenjava.jfxspring;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class MainController extends AbstractController
 {
-    @FXML private HBox buttonArea;
     @FXML private BorderPane contentArea;
 
-    private Map<String, Controller> controllers;
+    @Autowired private Page1Controller page1Controller;
+    @Autowired private Page2Controller page2Controller;
 
-    public MainController()
+    public void showPage1(ActionEvent event)
     {
-        controllers = new HashMap<String, Controller>();
+        contentArea.setCenter(page1Controller.getView());
     }
 
-    public void addPage(final String name, Controller controller)
+    public void showPage2(ActionEvent event)
     {
-        controllers.put(name, controller);
-        Button button = new Button(name);
-        button.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent actionEvent)
-            {
-                showPage(name);
-            }
-        });
-        buttonArea.getChildren().add(button);
-    }
-
-    public void showPage(String name)
-    {
-        Controller controller = controllers.get(name);
-        contentArea.setCenter(controller.getView());
+        contentArea.setCenter(page2Controller.getView());
     }
 }
