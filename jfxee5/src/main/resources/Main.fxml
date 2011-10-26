@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:controller="com.zenjava.jfxspring.MainController"
+            xmlns:fx="http://javafx.com/fxml">
+
+  <top>
+    <HBox fx:id="buttonArea"/>
+  </top>
+
+  <center>
+    <BorderPane fx:id="contentArea"/>
+  </center>
+
+</BorderPane>
