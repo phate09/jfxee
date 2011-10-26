@@ -9,7 +9,7 @@ public interface Controller
     /**
      * This method is needed only to allow the loadController() method in SampleAppFactory to
      * inject the view into this controller. Ideally FXML would allow us to specify @FXML on
-     * in AbstractController on the view parameter and this would not be needed.
+     * in AbstractController on the 'view' field and this method would not be needed.
      */
     void setView(Node view);
 }
