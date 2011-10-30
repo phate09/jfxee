@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language javascript?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="view"
+           fx:controller="com.zenjava.jfxspring.SampleController"
+           xmlns:fx="http://javafx.com/fxml">
+    <children>
+        <Button text="Click Me" fx:id="printBtn" onAction="#print" />
+    </children>
+</StackPane>
