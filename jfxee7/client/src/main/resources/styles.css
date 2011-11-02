@@ -1,0 +1,12 @@
+.root {
+    -fx-padding: 20;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #cbd0d7 0%, white 100%);
+}
+
+.message {
+    -fx-padding: 10;
+    -fx-background-color: #ffd;
+    -fx-background-radius: 4;
+    -fx-border-color: #aaa;
+    -fx-border-radius: 4;
+}

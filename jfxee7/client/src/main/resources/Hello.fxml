@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language javascript?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="view"
+      fx:controller="com.zenjava.jfxee7.HelloController"
+      spacing="6"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <styleClass><String fx:value="enterDetails"/></styleClass>
+
+    <children>
+
+        <Label fx:id="messageLabel" text="Waiting for your input">
+            <styleClass><String fx:value="message"/></styleClass>
+        </Label>
+
+        <Label text="First Name"/>
+        <TextField fx:id="firstNameField"/>
+
+        <Label text="Last Name"/>
+        <TextField fx:id="lastNameField"/>
+
+        <Button text="Connect to Server" onAction="#submit"/>
+
+    </children>
+</VBox>
