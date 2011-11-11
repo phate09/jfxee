@@ -5,6 +5,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * Provides a default implementation of a NavigationManager with standard support for managing the current place as
+ * well as the back and forward history. This class can be used as is for standard navigation support, or can be
+ * sub-classed for specific navigation requirements.
+ */
 public class DefaultNavigationManager implements NavigationManager
 {
     private ObjectProperty<Place> currentPlace;
