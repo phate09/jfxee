@@ -34,4 +34,90 @@
 
     </dependencies>
 
+    <build>
+
+        <finalName>browser-demo</finalName>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <excludeArtifactIds>javafx,junit,hamcrest-core</excludeArtifactIds>
+                        </configuration>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+
+                                <taskdef name="jfxdeploy"
+                                         classname="com.sun.javafx.tools.ant.DeployFXTask"
+                                         classpathref="maven.plugin.classpath"/>
+
+                                <taskdef name="jfxsignjar"
+                                         classname="com.sun.javafx.tools.ant.FXSignJarTask"
+                                         classpathref="maven.plugin.classpath"/>
+
+                                <mkdir dir="${project.build.directory}/dependency"/>
+
+                                <jfxdeploy width="800" height="600"
+                                           outdir="${project.build.directory}/deploy" outfile="${build.finalName}">
+                                    <info title="${project.name}"/>
+                                    <application name="${project.name}"
+                                                 mainClass="com.zenjava.playground.browser.demo.DemoApplication"/>
+                                    <resources>
+                                        <fileset dir="${project.build.directory}" includes="*.jar"/>
+                                        <fileset dir="${project.build.directory}/dependency" includes="*.jar"/>
+                                    </resources>
+                                </jfxdeploy>
+
+                                <jfxsignjar destdir="${project.build.directory}/deploy"
+                                            keyStore="${project.basedir}/src/main/jnlp/keystore.jks"
+                                            storePass="password"
+                                            alias="webstart"
+                                            keyPass="password">
+                                    <fileset dir="${project.build.directory}/deploy" includes="*.jar"/>
+                                </jfxsignjar>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun.javafx</groupId>
+                        <artifactId>javafx-ant</artifactId>
+                        <version>2.0.beta</version>
+                        <scope>system</scope>
+                        <systemPath>c:/apps/jfx/jfx2.0/tools/ant-javafx.jar</systemPath>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

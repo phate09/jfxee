@@ -26,7 +26,7 @@ public class TestDefaultActivityManager
     {
         DefaultActivityManager activityManager = new DefaultActivityManager();
 
-        SimpleActivity activity1 = new SimpleActivity();
+        SimpleActivity activity1 = new SimpleActivity("Activity1");
 
         activityManager.getActivityMappings().add(new RegexActivityMapping("test", activity1));
         activityManager.activate(new Place("test"));
@@ -38,8 +38,8 @@ public class TestDefaultActivityManager
     {
         DefaultActivityManager activityManager = new DefaultActivityManager();
 
-        SimpleActivity activity1 = new SimpleActivity();
-        SimpleActivity activity2 = new SimpleActivity();
+        SimpleActivity activity1 = new SimpleActivity("Activity1");
+        SimpleActivity activity2 = new SimpleActivity("Activity2");
 
         activityManager.getActivityMappings().add(new RegexActivityMapping("[ab]", activity1));
         activityManager.getActivityMappings().add(new RegexActivityMapping("[cd]", activity2));
@@ -62,8 +62,8 @@ public class TestDefaultActivityManager
     {
         DefaultActivityManager activityManager = new DefaultActivityManager();
 
-        SimpleActivity activity1 = new SimpleActivity();
-        SimpleActivity activity2 = new SimpleActivity();
+        SimpleActivity activity1 = new SimpleActivity("Activity1");
+        SimpleActivity activity2 = new SimpleActivity("Activity2");
 
         activityManager.getActivityMappings().add(new RegexActivityMapping("test", activity1));
         activityManager.getActivityMappings().add(new RegexActivityMapping("test", activity2));
@@ -77,9 +77,9 @@ public class TestDefaultActivityManager
     {
         DefaultActivityManager activityManager = new DefaultActivityManager();
 
-        SimpleActivity activity1 = new SimpleActivity();
-        SimpleActivity activity2 = new SimpleActivity();
-        SimpleActivity activity3 = new SimpleActivity();
+        SimpleActivity activity1 = new SimpleActivity("Activity1");
+        SimpleActivity activity2 = new SimpleActivity("Activity2");
+        SimpleActivity activity3 = new SimpleActivity("Activity3");
 
         activityManager.getActivityMappings().add(new RegexActivityMapping("test", activity1));
         activityManager.getActivityMappings().add(new RegexActivityMapping("test", activity2));
@@ -94,7 +94,7 @@ public class TestDefaultActivityManager
 
         activityManager.getActivityMappings().remove(1);
         activityManager.activate(new Place("test"));
-        assertEquals("Current activity is not as expected", activity2, activityManager.getCurrentActivity());
+        assertEquals("Current activity is not as expected", activity1, activityManager.getCurrentActivity());
     }
 
 }
