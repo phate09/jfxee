@@ -6,7 +6,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 
-public abstract class AbstractActivity<ViewType extends Node> implements Activity<ViewType>
+public abstract class AbstractActivity<ViewType extends Node> implements Activity<ViewType>, HasFxmlLoadedView<ViewType>
 {
     private ViewType view;
     private BooleanProperty active;
@@ -46,7 +46,7 @@ public abstract class AbstractActivity<ViewType extends Node> implements Activit
         return this.active;
     }
 
-    protected void setView(ViewType view)
+    public void setView(ViewType view)
     {
         this.view = view;
     }

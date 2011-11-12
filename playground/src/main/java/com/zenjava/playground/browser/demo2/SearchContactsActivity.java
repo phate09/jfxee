@@ -1,6 +1,7 @@
 package com.zenjava.playground.browser.demo2;
 
 import com.zenjava.playground.browser.AbstractActivity;
+import com.zenjava.playground.browser.FxmlLoadException;
 import com.zenjava.playground.browser.NavigationManager;
 import com.zenjava.playground.browser.Place;
 import com.zenjava.playground.browser.control.PlaceHyperlink;
@@ -11,38 +12,101 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
 import javafx.util.Callback;
 
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class SearchContactsActivity extends AbstractActivity<Node>
+public class SearchContactsActivity extends AbstractActivity<Node> implements Initializable
 {
-    private NavigationManager navigationManager;
-    private ContactsService contactsService;
+    @Inject private NavigationManager navigationManager;
+    @Inject private ContactsService contactsService;
 
-    private TextField searchField;
-    private ListView<Contact> resultsList;
+    @FXML private TextField searchField;
+    @FXML private ListView<Contact> resultsList;
 
-    public SearchContactsActivity(NavigationManager navigationManager, ContactsService contactsService)
+    public void initialize(URL url, ResourceBundle resourceBundle)
     {
-        this.navigationManager = navigationManager;
-        this.contactsService = contactsService;
-        setView(buildView());
+        searchField.textProperty().addListener(new ChangeListener<String>()
+        {
+            public void changed(ObservableValue<? extends String> source, String oldValue, String newValue)
+            {
+                search(null);
+            }
+        });
+
+        resultsList.setCellFactory(new Callback<ListView<Contact>, ListCell<Contact>>()
+        {
+            public ListCell<Contact> call(ListView<Contact> contactListView)
+            {
+                String fxmlFile = "/fxml/SearchContactsRow.fxml";
+                InputStream fxmlStream = null;
+                try
+                {
+                    fxmlStream = getClass().getResourceAsStream(fxmlFile);
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setBuilderFactory(new JavaFXBuilderFactory());
+                    final Node view = (Node) loader.load(fxmlStream);
+                    final ResultRowController controller = (ResultRowController) loader.getController();
+                    controller.setNavigationManager(navigationManager);
+                    return new ListCell<Contact>()
+                    {
+                        protected void updateItem(Contact contact, boolean empty)
+                        {
+                            super.updateItem(contact, empty);
+                            setGraphic(empty ? null : view);
+                            controller.setContact(contact);
+                        }
+                    };
+                }
+                catch (Exception e)
+                {
+                    // map checked exception to a runtime exception - this is a system failure, not a business logic failure
+                    // so using checked exceptions for this is not necessary.
+                    throw new FxmlLoadException(String.format(
+                            "Unable to load FXML from '%s': %s", fxmlFile, e.getMessage()), e);
+                }
+                finally
+                {
+                    if (fxmlStream != null)
+                    {
+                        try
+                        {
+                            fxmlStream.close();
+                        }
+                        catch (IOException e)
+                        {
+                            System.err.println("WARNING: error closing FXML stream: " + e);
+                            e.printStackTrace(System.err);
+                        }
+                    }
+                }
+            }
+        });
     }
+
 
     protected void activate()
     {
-        search();
+        search(null);
     }
 
-    protected void search()
+    protected void search(ActionEvent event)
     {
         final String[] keywords = searchField.getText().split("\\s+");
         final Task<List<Contact>> task = new Task<List<Contact>>()
@@ -65,102 +129,24 @@ public class SearchContactsActivity extends AbstractActivity<Node>
         new Thread(task).start();
     }
 
-
-    private Node buildView()
-    {
-        VBox rootPane = new VBox(10);
-        rootPane.getStyleClass().add("search-contacts");
-
-        Label titleLabel = new Label("Search Contacts");
-        titleLabel.getStyleClass().add("title");
-        rootPane.getChildren().add(titleLabel);
-
-        Node searchArea = buildSearchArea();
-        BorderPane.setMargin(searchArea, new Insets(0, 0, 10, 0));
-        rootPane.getChildren().add(searchArea);
-
-        Node resultsArea = buildResultsArea();
-        VBox.setVgrow(resultsArea, Priority.ALWAYS);
-        rootPane.getChildren().add(resultsArea);
-
-        return rootPane;
-    }
-
-    private Node buildSearchArea()
-    {
-        HBox box = new HBox(10);
-
-        searchField = new TextField();
-        searchField.textProperty().addListener(new ChangeListener<String>()
-        {
-            public void changed(ObservableValue<? extends String> source, String oldValue, String newValue)
-            {
-                search();
-            }
-        });
-        searchField.setPrefColumnCount(25);
-        box.getChildren().add(searchField);
-
-        Button searchButton = new Button("Search");
-        searchButton.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent event)
-            {
-                search();
-            }
-        });
-        box.getChildren().add(searchButton);
-
-        return box;
-    }
-
-    private Node buildResultsArea()
-    {
-        resultsList = new ListView<Contact>();
-        resultsList.setCellFactory(new Callback<ListView<Contact>, ListCell<Contact>>()
-        {
-            public ListCell<Contact> call(ListView<Contact> contactListView)
-            {
-                final ResultRow resultRow = new ResultRow();
-                return new ListCell<Contact>()
-                {
-                    protected void updateItem(Contact contact, boolean empty)
-                    {
-                        super.updateItem(contact, empty);
-                        setGraphic(empty ? null : resultRow);
-                        resultRow.setContact(contact);
-                    }
-                };
-            }
-        });
-
-        return resultsList;
-    }
-
     //-------------------------------------------------------------------------
 
-    private class ResultRow extends GridPane
+    public static class ResultRowController
     {
+        @FXML private ImageView photo;
+        @FXML private PlaceHyperlink nameLink;
+        @FXML private Label companyLabel;
+
         private Image noPhotoImage;
-        private ImageView photo;
-        private PlaceHyperlink nameLink;
-        private Label companyLabel;
 
-        private ResultRow()
+        public ResultRowController()
         {
-            setHgap(10);
-            setVgap(10);
-
             noPhotoImage = new Image(getClass().getResourceAsStream("/images/no-photo.jpg"));
-            photo = new ImageView(noPhotoImage);
-            add(photo, 0, 0, 1, 2);
+        }
 
-            nameLink = new PlaceHyperlink(navigationManager);
-            add(nameLink, 1, 0);
-
-            companyLabel = new Label();
-            companyLabel.getStyleClass().add("company");
-            add(companyLabel, 1, 1);
+        public void setNavigationManager(NavigationManager navigationManager)
+        {
+            nameLink.setNavigationManager(navigationManager);
         }
 
         public void setContact(Contact contact)
@@ -168,10 +154,9 @@ public class SearchContactsActivity extends AbstractActivity<Node>
             if (contact != null)
             {
                 nameLink.setText(String.format("%s %s", contact.getFirstName(), contact.getLastName()));
-                Place place = new Place(ContactApplication.VIEW_CONTACT_PLACE);
+                Place place = new Place(ContactsModule.VIEW_CONTACT_PLACE);
                 place.getParameters().put("contactId", contact.getContactId());
                 nameLink.setPlace(place);
-
                 companyLabel.setText(contact.getCompany());
             }
             else
@@ -182,5 +167,6 @@ public class SearchContactsActivity extends AbstractActivity<Node>
                 photo.setImage(noPhotoImage);
             }
         }
+
     }
 }

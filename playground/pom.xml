@@ -23,6 +23,14 @@
             <systemPath>C:/Apps/jfx/jfx2.0/rt/lib/jfxrt.jar</systemPath>
         </dependency>
 
+        <!-- Guice -->
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+
         <!-- JUnit -->
 
         <dependency>
