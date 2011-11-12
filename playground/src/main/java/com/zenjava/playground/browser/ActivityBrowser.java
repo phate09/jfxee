@@ -82,10 +82,12 @@ public class ActivityBrowser extends AbstractActivity<Parent>
         // todo use control + skin
 
         StackPane rootPane = new StackPane();
+        rootPane.getStyleClass().add("activity-browser");
 
         BorderPane rootPaneLayout = new BorderPane();
 
         HBox navBar = new HBox(4);
+        navBar.getStyleClass().add("toolbar");
 
         BackButton backButton = new BackButton("<");
         backButton.navigationManagerProperty().bind(this.navigationManager);
@@ -98,6 +100,7 @@ public class ActivityBrowser extends AbstractActivity<Parent>
         rootPaneLayout.setTop(navBar);
 
         this.contentArea = new StackPane();
+        this.contentArea.getStyleClass().add("content");
         rootPaneLayout.setCenter(contentArea);
 
         rootPane.getChildren().add(rootPaneLayout);

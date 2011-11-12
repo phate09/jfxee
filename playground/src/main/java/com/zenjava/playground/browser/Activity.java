@@ -1,5 +1,6 @@
 package com.zenjava.playground.browser;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 
 /**
@@ -11,6 +12,12 @@ import javafx.scene.Node;
  */
 public interface Activity<ViewType extends Node>
 {
+    boolean isActive();
+
+    void setActive(boolean active);
+
+    BooleanProperty activeProperty();
+
     /**
      * Retrieves the view for rendering this activity. This can be added to a Scene or other Parent node to allow users
      * to interact with this Activity.

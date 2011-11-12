@@ -3,8 +3,12 @@ package com.zenjava.playground.browser;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Provides a default implementation of an ActivityManager with standard support for managing the ActivityMappings
@@ -34,11 +38,58 @@ public class DefaultActivityManager implements ActivityManager
             ActivityMapping mapping = activityMappings.get(i);
             if (mapping.isMatch(place))
             {
-                currentActivity.set(mapping.getActivity());
+                Activity current = currentActivity.get();
+                if (current != null)
+                {
+                    current.setActive(false);
+                }
+
+                Activity activity = mapping.getActivity();
+                setParameters(activity, place.getParameters());
+                activity.setActive(true);
+                currentActivity.set(activity);
                 return;
             }
         }
         throw new UnsupportedPlaceException("No activity mapping is registered for path: " + place.getName());
+    }
+
+    private void setParameters(Activity activity, Map<String, Object> parameters) throws ActivityParameterException
+    {
+        for (Field field : activity.getClass().getDeclaredFields())
+        {
+            ActivityParameter annotation = field.getAnnotation(ActivityParameter.class);
+            if (annotation != null)
+            {
+                String name = annotation.value();
+                if (name == null || name.equals(""))
+                {
+                    name = field.getName();
+                }
+
+                Object value = parameters.get(name);
+
+                try
+                {
+                    field.setAccessible(true);
+                    if (WritableValue.class.isAssignableFrom(field.getType()))
+                    {
+                        WritableValue property = (WritableValue) field.get(activity);
+                        property.setValue(value);
+                    }
+                    else
+                    {
+                        field.set(activity, value);
+                    }
+                }
+                catch (IllegalAccessException e)
+                {
+                    throw new ActivityParameterException(
+                            String.format("Error setting property '%s' on field '%s' in Activity '%s'",
+                                    name, field.getName(), activity), e);
+                }
+            }
+        }
     }
 
     public ReadOnlyObjectProperty<Activity> currentActivityProperty()
