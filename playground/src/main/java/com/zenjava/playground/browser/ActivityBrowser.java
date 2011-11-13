@@ -2,7 +2,7 @@ package com.zenjava.playground.browser;
 
 import com.zenjava.playground.browser.control.BackButton;
 import com.zenjava.playground.browser.control.ForwardButton;
-import javafx.animation.FadeTransition;
+import com.zenjava.playground.browser.transition.*;
 import javafx.animation.SequentialTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,7 +15,6 @@ import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
 
 public class ActivityBrowser extends AbstractActivity<Parent>
 {
@@ -121,7 +120,7 @@ public class ActivityBrowser extends AbstractActivity<Parent>
      * end of the list of mapping for this ActivityBrowser.
      *
      * @param pathExpression the regular expression to map the activity to.
-     * @param activity the activity to be registered.
+     * @param activity       the activity to be registered.
      * @return the mapping created for the activity.
      */
     public RegexActivityMapping registerActivity(String pathExpression, Activity activity)
@@ -155,33 +154,54 @@ public class ActivityBrowser extends AbstractActivity<Parent>
     {
         SequentialTransition transition = new SequentialTransition();
 
+        ViewTransition exit = null;
         if (oldActivity != null)
         {
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), oldActivity.getView());
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0);
-            transition.getChildren().add(fadeOut);
+            if (oldActivity instanceof HasExitTransition)
+            {
+                exit = ((HasExitTransition) oldActivity).getExitTransition();
+            }
+            else
+            {
+                exit = new FadeOutTransition(oldActivity.getView());
+            }
+            exit.setupBeforeAnimation(contentArea);
+            transition.getChildren().add(exit.getAnimation());
         }
 
+        ViewTransition entry = null;
         if (newActivity != null)
         {
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), newActivity.getView());
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
-            transition.getChildren().add(fadeIn);
-
-            newActivity.getView().setOpacity(0);
+            if (newActivity instanceof HasEntryTransition)
+            {
+                entry = ((HasEntryTransition) newActivity).getEntryTransition();
+            }
+            else
+            {
+                entry = new FadeInTransition(newActivity.getView());
+            }
+            entry.setupBeforeAnimation(contentArea);
+            transition.getChildren().add(entry.getAnimation());
             contentArea.getChildren().add(newActivity.getView());
         }
 
+        final ViewTransition finalExit = exit;
+        final ViewTransition finalEntry = entry;
         transition.setOnFinished(new EventHandler<ActionEvent>()
         {
             public void handle(ActionEvent event)
             {
+                if (finalEntry != null)
+                {
+                    finalEntry.cleanupAfterAnimation();
+                }
                 if (oldActivity != null)
                 {
                     contentArea.getChildren().remove(oldActivity.getView());
-                    oldActivity.getView().setOpacity(1);
+                }
+                if (finalExit != null)
+                {
+                    finalExit.cleanupAfterAnimation();
                 }
                 glassPane.setVisible(false);
             }
@@ -189,6 +209,7 @@ public class ActivityBrowser extends AbstractActivity<Parent>
 
         glassPane.setVisible(true);
         transition.play();
+
     }
 
     //-------------------------------------------------------------------------

@@ -6,6 +6,7 @@ import com.zenjava.playground.browser.ActivityParameter;
 import com.zenjava.playground.browser.NavigationManager;
 import com.zenjava.playground.browser.demo2.service.Contact;
 import com.zenjava.playground.browser.demo2.service.ContactsService;
+import com.zenjava.playground.browser.transition.*;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class ViewContactActivity extends AbstractActivity<Node>
+        implements HasEntryTransition, HasExitTransition
 {
     @ActivityParameter private LongProperty contactId;
 
@@ -37,6 +39,16 @@ public class ViewContactActivity extends AbstractActivity<Node>
     {
         this.contactId = new SimpleLongProperty();
         noPhotoImage = new Image(getClass().getResourceAsStream("/images/no-photo.jpg"));
+    }
+
+    public ViewTransition getEntryTransition()
+    {
+        return new FlyInTransition(getView());
+    }
+
+    public ViewTransition getExitTransition()
+    {
+        return new FlyOutTransition(getView());
     }
 
     protected void activate()
