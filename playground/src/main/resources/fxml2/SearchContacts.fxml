@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language javascript?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.zenjava.playground.browser2.demo.contact.SearchContactsActivity">
+
+    <styleClass><String fx:value="search-contacts"/></styleClass>
+    <children>
+
+        <Label text="Search Contacts">
+            <styleClass>
+                <String fx:value="label"/>
+                <String fx:value="title"/>
+            </styleClass>
+        </Label>
+
+
+        <HBox spacing="10">
+            <children>
+                <TextField fx:id="searchField" prefColumnCount="25"/>
+                <Button fx:id="searchButton" text="Search" onAction="#search"/>
+            </children>
+        </HBox>
+
+        <ListView fx:id="resultsList" VBox.vgrow="ALWAYS">
+
+        </ListView>
+
+    </children>
+</VBox>
