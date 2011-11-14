@@ -1,4 +1,4 @@
-package com.zenjava.jfxspring;
+package com.zenjava.download;
 
 import javafx.application.Application;
 import javafx.concurrent.Worker;
