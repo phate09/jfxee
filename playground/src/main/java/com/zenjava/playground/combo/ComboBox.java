@@ -41,18 +41,29 @@ public class ComboBox<ItemType> extends BorderPane
             }
         });
 
+        addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
+        {
+            public void handle(KeyEvent event)
+            {
+                if (KeyCode.UP.equals(event.getCode())
+                        || KeyCode.DOWN.equals(event.getCode())
+                        || KeyCode.ENTER.equals(event.getCode()))
+                {
+                    showPopup();
+                }
+            }
+        });
 
         // need to force escape key to close since default behaviour is not working
-        popupList.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<Event>()
+        popupList.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
         {
-            public void handle(Event event)
+            public void handle(KeyEvent event)
             {
-                KeyEvent keyEvent = (KeyEvent) event;
-                if (KeyCode.ESCAPE.equals(keyEvent.getCode()))
+                if (KeyCode.ESCAPE.equals(event.getCode()))
                 {
                     popup.hide();
                 }
-                else if (KeyCode.UP.equals(keyEvent.getCode()))
+                else if (KeyCode.UP.equals(event.getCode()))
                 {
                     forceKeepOpen = true;
                     popupList.getSelectionModel().select(
@@ -60,7 +71,7 @@ public class ComboBox<ItemType> extends BorderPane
                     forceKeepOpen = false;
                     event.consume();
                 }
-                else if (KeyCode.DOWN.equals(keyEvent.getCode()))
+                else if (KeyCode.DOWN.equals(event.getCode()))
                 {
                     forceKeepOpen = true;
                     popupList.getSelectionModel().select(
@@ -69,7 +80,7 @@ public class ComboBox<ItemType> extends BorderPane
                     forceKeepOpen = true;
                     event.consume();
                 }
-                else if (KeyCode.ENTER.equals(keyEvent.getCode()))
+                else if (KeyCode.ENTER.equals(event.getCode()))
                 {
                     popup.hide();
                     event.consume();
