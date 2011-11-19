@@ -1,18 +1,22 @@
 package com.zenjava.playground.browser2.navigation;
 
-import com.zenjava.playground.browser2.activity.AbstractActivity;
-import com.zenjava.playground.browser2.activity.Activatable;
-import com.zenjava.playground.browser2.activity.HasNode;
+import com.zenjava.playground.browser.ActivityParameterException;
+import com.zenjava.playground.browser2.activity.*;
 import com.zenjava.playground.browser2.navigation.control.BackButton;
 import com.zenjava.playground.browser2.navigation.control.ForwardButton;
 import com.zenjava.playground.browser2.transition.*;
 import javafx.animation.SequentialTransition;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WritableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -21,6 +25,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
+import java.lang.reflect.Field;
+
 public class Browser extends AbstractActivity<Parent>
 {
     private StackPane contentArea;
@@ -28,6 +34,8 @@ public class Browser extends AbstractActivity<Parent>
     private ObjectProperty<NavigationManager> navigationManager;
     private ObjectProperty<HasNode> currentPage;
     private ObservableList<PlaceResolver> placeResolvers;
+    private BooleanProperty animating;
+    private BooleanProperty busy;
 
     public Browser()
     {
@@ -39,6 +47,8 @@ public class Browser extends AbstractActivity<Parent>
         this.navigationManager = new SimpleObjectProperty<NavigationManager>();
         this.currentPage = new SimpleObjectProperty<HasNode>();
         this.placeResolvers = FXCollections.observableArrayList();
+        this.animating = new SimpleBooleanProperty();
+        this.busy = new SimpleBooleanProperty();
 
         // manage current place
 
@@ -57,12 +67,13 @@ public class Browser extends AbstractActivity<Parent>
                             HasNode oldPage = currentPage.get();
                             if (oldPage instanceof Activatable)
                             {
-                                ((Activatable) oldPage).deactivate();
+                                ((Activatable) oldPage).setActive(false);
                             }
 
                             if (newPage instanceof Activatable)
                             {
-                                ((Activatable) newPage).activate(newPlace.getParameters());
+                                setParameters(newPage, newPlace);
+                                ((Activatable) newPage).setActive(true);
                             }
                             currentPage.set(newPage);
                             return;
@@ -92,11 +103,47 @@ public class Browser extends AbstractActivity<Parent>
 
         // manage current page
 
+        final ListChangeListener<? super Worker> workerListListener = new ListChangeListener<Worker>()
+        {
+            public void onChanged(Change<? extends Worker> change)
+            {
+                getWorkers().setAll(change.getList());
+            }
+        };
+
         this.currentPage.addListener(new ChangeListener<HasNode>()
         {
             public void changed(ObservableValue<? extends HasNode> source, HasNode oldPage, HasNode newPage)
             {
+                getWorkers().clear();
+
+                if (oldPage instanceof HasWorkers)
+                {
+                    ((HasWorkers) oldPage).getWorkers().removeListener(workerListListener);
+                }
+
+                if (newPage instanceof HasWorkers)
+                {
+                    ((HasWorkers) newPage).getWorkers().addListener(workerListListener);
+                }
+
                 transition(oldPage, newPage);
+            }
+        });
+
+        getWorkers().addListener(new ListChangeListener<Worker>()
+        {
+            public void onChanged(Change<? extends Worker> change)
+            {
+                for (Worker worker : getWorkers())
+                {
+                    if (worker.isRunning())
+                    {
+                        busy.set(true);
+                        return;
+                    }
+                }
+                busy.set(false);
             }
         });
 
@@ -130,6 +177,7 @@ public class Browser extends AbstractActivity<Parent>
         this.glassPane = new BorderPane();
         this.glassPane.setStyle("-fx-cursor: wait"); // todo use control + skin + default css
         this.glassPane.setVisible(false);
+        this.glassPane.visibleProperty().bind(animating.or(busy));
         rootPane.getChildren().add(this.glassPane);
 
         setNode(rootPane);
@@ -150,6 +198,44 @@ public class Browser extends AbstractActivity<Parent>
     public ObservableList<PlaceResolver> getPlaceResolvers()
     {
         return placeResolvers;
+    }
+
+    protected void setParameters(HasNode page, Place place)
+    {
+        for (Field field : page.getClass().getDeclaredFields())
+        {
+            Param annotation = field.getAnnotation(Param.class);
+            if (annotation != null)
+            {
+                String name = annotation.value();
+                if (name == null || name.equals(""))
+                {
+                    name = field.getName();
+                }
+
+                Object value = place.getParameters().get(name);
+
+                try
+                {
+                    field.setAccessible(true);
+                    if (WritableValue.class.isAssignableFrom(field.getType()))
+                    {
+                        WritableValue property = (WritableValue) field.get(page);
+                        property.setValue(value);
+                    }
+                    else
+                    {
+                        field.set(page, value);
+                    }
+                }
+                catch (IllegalAccessException e)
+                {
+                    throw new ActivityParameterException(
+                            String.format("Error setting property '%s' on field '%s' in Activity '%s'",
+                                    name, field.getName(), page), e);
+                }
+            }
+        }
     }
 
     protected void transition(final HasNode oldPage, HasNode newPage)
@@ -205,11 +291,11 @@ public class Browser extends AbstractActivity<Parent>
                 {
                     finalExit.cleanupAfterAnimation();
                 }
-                glassPane.setVisible(false);
+                animating.set(false);
             }
         });
 
-        glassPane.setVisible(true);
+        animating.set(true);
         transition.play();
 
     }

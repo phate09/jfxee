@@ -7,10 +7,9 @@ import com.zenjava.playground.browser2.demo.contact.service.ContactsService;
 import com.zenjava.playground.browser2.navigation.NavigationManager;
 import com.zenjava.playground.browser2.navigation.Place;
 import com.zenjava.playground.browser2.navigation.control.PlaceHyperlink;
+import com.zenjava.playground.browser2.worker.BackgroundTask;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SearchContactsActivity extends AbstractActivity<Node> implements Initializable
@@ -101,33 +99,27 @@ public class SearchContactsActivity extends AbstractActivity<Node> implements In
         });
     }
 
-    public void activate(Map<String, Object> parameters)
+    protected void activated()
     {
-        super.activate(parameters);
         search(null);
     }
 
     public void search(ActionEvent event)
     {
         final String[] keywords = searchField.getText().split("\\s+");
-        final Task<List<Contact>> task = new Task<List<Contact>>()
+        final BackgroundTask<List<Contact>> task = new BackgroundTask<List<Contact>>()
         {
             protected List<Contact> call() throws Exception
             {
                 return contactsService.searchContacts(keywords);
             }
-        };
-        task.stateProperty().addListener(new ChangeListener<Worker.State>()
-        {
-            public void changed(ObservableValue<? extends Worker.State> source, Worker.State oldState, Worker.State newState)
+
+            protected void onSuccess(List<Contact> results)
             {
-                if (newState.equals(Worker.State.SUCCEEDED))
-                {
-                    resultsList.getItems().setAll(task.getValue());
-                }
+                resultsList.getItems().setAll(results);
             }
-        });
-        new Thread(task).start();
+        };
+        executeTask(task);
     }
 
     //-------------------------------------------------------------------------

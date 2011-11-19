@@ -1,22 +1,41 @@
 package com.zenjava.playground.browser2.activity;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import javafx.scene.Node;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Map;
-
-public abstract class AbstractActivity<NodeType extends Node> implements HasNode<NodeType>, Activatable
+public abstract class AbstractActivity<NodeType extends Node>
+        implements HasNode<NodeType>, Activatable, HasWorkers
 {
     private NodeType node;
     private BooleanProperty active;
+    private ObservableList<Worker> workers;
 
     protected AbstractActivity()
     {
         this.active = new SimpleBooleanProperty();
+        this.active.addListener(new ChangeListener<Boolean>()
+        {
+            public void changed(ObservableValue<? extends Boolean> source, Boolean oldValue, Boolean newValue)
+            {
+                if (newValue)
+                {
+                    activated();
+                }
+                else
+                {
+                    deactivated();
+                }
+            }
+        });
+
+        this.workers = FXCollections.observableArrayList();
     }
 
     public NodeType getNode()
@@ -29,15 +48,9 @@ public abstract class AbstractActivity<NodeType extends Node> implements HasNode
         this.node = node;
     }
 
-    public void activate(Map<String, Object> parameters)
+    public void setActive(boolean active)
     {
-        processActivationAnnotations(parameters);
-        active.set(true);
-    }
-
-    public void deactivate()
-    {
-        active.set(false);
+        this.active.set(active);
     }
 
     public boolean isActive()
@@ -45,43 +58,45 @@ public abstract class AbstractActivity<NodeType extends Node> implements HasNode
         return this.active.get();
     }
 
-    public ReadOnlyBooleanProperty activeProperty()
+    public BooleanProperty activeProperty()
     {
         return this.active;
     }
 
-    protected void processActivationAnnotations(Map<String, Object> parameters)
+    public ObservableList<Worker> getWorkers()
     {
-        Method[] methods = getClass().getMethods();
-        for (Method method : methods)
-        {
-            if (method.getAnnotation(Activation.class) != null)
-            {
-                try
-                {
-                    Object[] params = new Object[method.getParameterTypes().length];
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-                    for (int i = 0; i < parameterTypes.length; i++)
-                    {
-                        Class<?> paramType = parameterTypes[i];
-                        for (Annotation annotation : parameterAnnotations[i])
-                        {
-                            if (annotation instanceof ActivationParam)
-                            {
-                                params[i] = parameters.get(((ActivationParam)annotation).value());
-                            }
-                        }
-                        ActivationParam annotation = paramType.getAnnotation(ActivationParam.class);
+        return workers;
+    }
 
-                    }
-                    method.invoke(this, params);
-                }
-                catch (Exception e)
+    protected void activated()
+    {
+    }
+
+    protected void deactivated()
+    {
+    }
+
+    protected void executeTask(Task task)
+    {
+        watchWorker(task);
+        new Thread(task).start();
+    }
+
+    protected void watchWorker(final Worker worker)
+    {
+        worker.runningProperty().addListener(new ChangeListener<Boolean>()
+        {
+            public void changed(ObservableValue<? extends Boolean> source, Boolean olValue, Boolean newValue)
+            {
+                if (newValue)
                 {
-                    throw new ActivationException(String.format("Failed to call custom activation method '%s'", method.getName()), e);
+                    workers.add(worker);
+                }
+                else
+                {
+                    workers.remove(worker);
                 }
             }
-        }
+        });
     }
 }

@@ -52,6 +52,8 @@ public class ContactsService
 
     public Contact getContact(long contactId)
     {
+        //try { Thread.sleep(3000); } catch (Exception e) {}
+
         for (Contact contact : contacts)
         {
             if (contact.getContactId() == contactId)
