@@ -1,10 +1,10 @@
 package com.zenjava.playground.browser2.transition;
 
-import javafx.scene.Parent;
+import javafx.geometry.Bounds;
 
 public abstract class AbstractViewTransition implements ViewTransition
 {
-    public void setupBeforeAnimation(Parent animationCanvas)
+    public void setupBeforeAnimation(Bounds bounds)
     {
     }
 

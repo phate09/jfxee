@@ -2,8 +2,8 @@ package com.zenjava.playground.browser2.transition;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.util.Duration;
 
 public class FadeInTransition extends AbstractViewTransition
@@ -15,7 +15,7 @@ public class FadeInTransition extends AbstractViewTransition
         this.targetNode = targetNode;
     }
 
-    public void setupBeforeAnimation(Parent animationCanvas)
+    public void setupBeforeAnimation(Bounds bounds)
     {
         targetNode.setOpacity(0);
     }

@@ -1,14 +1,15 @@
 package com.zenjava.playground.browser2.navigation;
 
+import com.sun.javafx.css.StyleManager;
 import com.zenjava.playground.browser.ActivityParameterException;
-import com.zenjava.playground.browser2.activity.*;
-import com.zenjava.playground.browser2.navigation.control.BackButton;
-import com.zenjava.playground.browser2.navigation.control.ForwardButton;
+import com.zenjava.playground.browser2.activity.Activatable;
+import com.zenjava.playground.browser2.activity.HasNode;
+import com.zenjava.playground.browser2.activity.HasWorkers;
+import com.zenjava.playground.browser2.activity.Param;
 import com.zenjava.playground.browser2.transition.*;
+import javafx.animation.Animation;
 import javafx.animation.SequentialTransition;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,23 +20,27 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Control;
 
 import java.lang.reflect.Field;
 
-public class Browser extends AbstractActivity<Parent>
+public class Browser extends Control
 {
-    private StackPane contentArea;
-    private Node glassPane;
+    // work around for bug: http://javafx-jira.kenai.com/browse/RT-16647
+    static
+    {
+        StyleManager.getInstance().addUserAgentStylesheet("styles/jfxflow-browser.css");
+    }
+
     private ObjectProperty<NavigationManager> navigationManager;
     private ObjectProperty<HasNode> currentPage;
     private ObservableList<PlaceResolver> placeResolvers;
-    private BooleanProperty animating;
-    private BooleanProperty busy;
+    private ObjectProperty<Animation> currentAnimation;
+    private ObservableList<Worker> workers;
+    private ObjectProperty<Node> content;
+    private ObjectProperty<Bounds> contentBounds;
 
     public Browser()
     {
@@ -44,11 +49,15 @@ public class Browser extends AbstractActivity<Parent>
 
     public Browser(NavigationManager navigationManager)
     {
+        getStyleClass().add("browser");
+
         this.navigationManager = new SimpleObjectProperty<NavigationManager>();
         this.currentPage = new SimpleObjectProperty<HasNode>();
         this.placeResolvers = FXCollections.observableArrayList();
-        this.animating = new SimpleBooleanProperty();
-        this.busy = new SimpleBooleanProperty();
+        this.currentAnimation = new SimpleObjectProperty<Animation>();
+        this.workers = FXCollections.observableArrayList();
+        this.content = new SimpleObjectProperty<Node>();
+        this.contentBounds = new SimpleObjectProperty<Bounds>();
 
         // manage current place
 
@@ -107,7 +116,8 @@ public class Browser extends AbstractActivity<Parent>
         {
             public void onChanged(Change<? extends Worker> change)
             {
-                getWorkers().setAll(change.getList());
+                // todo be more efficient about this
+                workers.setAll(change.getList());
             }
         };
 
@@ -115,7 +125,7 @@ public class Browser extends AbstractActivity<Parent>
         {
             public void changed(ObservableValue<? extends HasNode> source, HasNode oldPage, HasNode newPage)
             {
-                getWorkers().clear();
+                workers.clear();
 
                 if (oldPage instanceof HasWorkers)
                 {
@@ -131,57 +141,6 @@ public class Browser extends AbstractActivity<Parent>
             }
         });
 
-        getWorkers().addListener(new ListChangeListener<Worker>()
-        {
-            public void onChanged(Change<? extends Worker> change)
-            {
-                for (Worker worker : getWorkers())
-                {
-                    if (worker.isRunning())
-                    {
-                        busy.set(true);
-                        return;
-                    }
-                }
-                busy.set(false);
-            }
-        });
-
-
-        // todo use control + skin
-
-        StackPane rootPane = new StackPane();
-        rootPane.getStyleClass().add("activity-browser");
-
-        BorderPane rootPaneLayout = new BorderPane();
-
-        HBox navBar = new HBox(4);
-        navBar.getStyleClass().add("toolbar");
-
-        BackButton backButton = new BackButton("<");
-        backButton.navigationManagerProperty().bind(this.navigationManager);
-        navBar.getChildren().add(backButton);
-
-        ForwardButton forwardButton = new ForwardButton(">");
-        forwardButton.navigationManagerProperty().bind(this.navigationManager);
-        navBar.getChildren().add(forwardButton);
-
-        rootPaneLayout.setTop(navBar);
-
-        this.contentArea = new StackPane();
-        this.contentArea.getStyleClass().add("content");
-        rootPaneLayout.setCenter(contentArea);
-
-        rootPane.getChildren().add(rootPaneLayout);
-
-        this.glassPane = new BorderPane();
-        this.glassPane.setStyle("-fx-cursor: wait"); // todo use control + skin + default css
-        this.glassPane.setVisible(false);
-        this.glassPane.visibleProperty().bind(animating.or(busy));
-        rootPane.getChildren().add(this.glassPane);
-
-        setNode(rootPane);
-
         setNavigationManager(navigationManager);
     }
 
@@ -195,9 +154,29 @@ public class Browser extends AbstractActivity<Parent>
         this.navigationManager.set(navigationManager);
     }
 
+    public ObjectProperty<NavigationManager> navigationManagerProperty()
+    {
+        return navigationManager;
+    }
+
     public ObservableList<PlaceResolver> getPlaceResolvers()
     {
         return placeResolvers;
+    }
+
+    public ObjectProperty<Node> contentProperty()
+    {
+        return content;
+    }
+
+    public ObjectProperty<Bounds> contentBoundsProperty()
+    {
+        return contentBounds;
+    }
+
+    protected String getUserAgentStylesheet()
+    {
+        return "styles/jfxflow-browser.css";
     }
 
     protected void setParameters(HasNode page, Place place)
@@ -253,7 +232,7 @@ public class Browser extends AbstractActivity<Parent>
             {
                 exit = new FadeOutTransition(oldPage.getNode());
             }
-            exit.setupBeforeAnimation(contentArea);
+            exit.setupBeforeAnimation(contentBounds.get());
             transition.getChildren().add(exit.getAnimation());
         }
 
@@ -268,9 +247,9 @@ public class Browser extends AbstractActivity<Parent>
             {
                 entry = new FadeInTransition(newPage.getNode());
             }
-            entry.setupBeforeAnimation(contentArea);
+            entry.setupBeforeAnimation(contentBounds.get());
             transition.getChildren().add(entry.getAnimation());
-            contentArea.getChildren().add(newPage.getNode());
+            content.set(newPage.getNode());
         }
 
         final ViewTransition finalExit = exit;
@@ -283,19 +262,14 @@ public class Browser extends AbstractActivity<Parent>
                 {
                     finalEntry.cleanupAfterAnimation();
                 }
-                if (oldPage != null)
-                {
-                    contentArea.getChildren().remove(oldPage.getNode());
-                }
                 if (finalExit != null)
                 {
                     finalExit.cleanupAfterAnimation();
                 }
-                animating.set(false);
             }
         });
 
-        animating.set(true);
+        currentAnimation.set(transition);
         transition.play();
 
     }

@@ -2,8 +2,8 @@ package com.zenjava.playground.browser2.transition;
 
 import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.util.Duration;
 
 public class FlyOutTransition extends AbstractViewTransition
@@ -16,9 +16,9 @@ public class FlyOutTransition extends AbstractViewTransition
         this.targetNode = targetNode;
     }
 
-    public void setupBeforeAnimation(Parent animationCanvas)
+    public void setupBeforeAnimation(Bounds bounds)
     {
-        endY = animationCanvas.getBoundsInParent().getMaxY();
+        endY = bounds.getMaxY();
         targetNode.setTranslateY(endY);
     }
 

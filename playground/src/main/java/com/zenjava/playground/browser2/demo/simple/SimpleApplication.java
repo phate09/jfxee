@@ -30,7 +30,7 @@ public class SimpleApplication extends Application
 
         browser.getNavigationManager().goTo(new Place(PLACE_PAGE1));
 
-        Scene scene = new Scene(browser.getNode(), 800, 600);
+        Scene scene = new Scene(browser, 800, 600);
         stage.setScene(scene);
         stage.show();
     }

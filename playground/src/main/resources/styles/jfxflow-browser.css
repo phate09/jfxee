@@ -1,0 +1,14 @@
+.browser {
+    -fx-skin: "com.zenjava.playground.browser2.navigation.BrowserSkin";
+}
+
+.browser .toolbar {
+    -fx-padding: 10;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, white 0%, #e6e6e6 100%);
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #b6b6b6;
+}
+
+.browser .content {
+    -fx-padding: 10;
+}

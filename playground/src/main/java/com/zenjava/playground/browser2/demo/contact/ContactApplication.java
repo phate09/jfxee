@@ -20,7 +20,7 @@ public class ContactApplication extends Application
                 = new AnnotationConfigApplicationContext(ContactsApplicationFactory.class);
         Browser browser = context.getBean(Browser.class);
         browser.getNavigationManager().goTo(new Place(ContactsApplicationFactory.SEARCH_CONTACTS_PLACE));
-        Scene scene = new Scene(browser.getNode(), 800, 600);
+        Scene scene = new Scene(browser, 800, 600);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.show();

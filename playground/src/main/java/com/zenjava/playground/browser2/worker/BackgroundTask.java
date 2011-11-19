@@ -12,7 +12,12 @@ public abstract class BackgroundTask<ResultType> extends Task<ResultType>
 
     protected BackgroundTask()
     {
-        this.errorHandler = new SimpleObjectProperty<ErrorHandler>();
+        this(null);
+    }
+
+    protected BackgroundTask(ErrorHandler errorHandler)
+    {
+        this.errorHandler = new SimpleObjectProperty<ErrorHandler>(errorHandler);
 
         stateProperty().addListener(new ChangeListener<State>()
         {
