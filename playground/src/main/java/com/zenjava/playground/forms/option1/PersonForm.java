@@ -29,6 +29,8 @@ public class PersonForm extends VBox
     private ChoiceBox<Gender> genderChoiceBox;
     private Button submitButton;
     private Button clearButton;
+    private Label submitSuccessMessageLabel;
+
     private ObservableList<ConstraintViolation<Person>> constraintViolations;
     private boolean autoValidate;
     private Map<Path, Node> formFields;
@@ -47,10 +49,12 @@ public class PersonForm extends VBox
             System.out.println("All fields are valid, saving to database");
             Person person = getPerson();
             // do submission of person, i.e. save to database, etc
+            submitSuccessMessageLabel.setVisible(true);
         }
         else
         {
             // validation errors, from now on auto validate whenever the user changes something
+            submitSuccessMessageLabel.setVisible(false);
             autoValidate = true;
         }
     }
@@ -68,6 +72,7 @@ public class PersonForm extends VBox
     {
         autoValidate = false;
         constraintViolations.clear();
+        submitSuccessMessageLabel.setVisible(false);
 
         if (person != null)
         {
@@ -142,6 +147,7 @@ public class PersonForm extends VBox
         getChildren().add(buildFieldArea());
         getChildren().add(new Separator(Orientation.HORIZONTAL));
         getChildren().add(buildButtonArea());
+        getChildren().add(buildSubmitFeedbackArea());
     }
 
     private Node buildHeaderArea()
@@ -264,5 +270,15 @@ public class PersonForm extends VBox
         box.getChildren().add(clearButton);
 
         return box;
+    }
+
+    private Node buildSubmitFeedbackArea()
+    {
+        submitSuccessMessageLabel = new Label("Submitted successfully");
+        submitSuccessMessageLabel.setMaxWidth(Integer.MAX_VALUE);
+        submitSuccessMessageLabel.setAlignment(Pos.CENTER);
+        submitSuccessMessageLabel.getStyleClass().add("submit-success");
+        submitSuccessMessageLabel.setVisible(false);
+        return submitSuccessMessageLabel;
     }
 }

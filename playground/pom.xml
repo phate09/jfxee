@@ -128,7 +128,7 @@
                                            outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}">
                                     <info title="${project.name}"/>
                                     <application name="${project.name}"
-                                                 mainClass="com.zenjava.playground.browser.demo2.ContactApplication"/>
+                                                 mainClass="com.zenjava.playground.forms.option1.TestFormApplication"/>
                                     <resources>
                                         <fileset dir="${project.build.directory}" includes="*.jar"/>
                                         <fileset dir="${project.build.directory}/dependency" includes="*.jar"/>

@@ -20,4 +20,8 @@
     -fx-background-color: -fx-shadow-highlight-color, #caa, #caa, #fee;
 }
 
+.submit-success {
+    -fx-text-fill: #090;
+}
+
 
