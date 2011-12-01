@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.zenjava</groupId>
+    <artifactId>jfxforms</artifactId>
+    <name>JFX Forms and Validations</name>
+
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+
+        <!-- JavaFX -->
+
+        <dependency>
+            <groupId>com.sun.javafx</groupId>
+            <artifactId>javafx</artifactId>
+            <version>2.0.beta</version>
+            <scope>system</scope>
+            <systemPath>C:/Apps/jfx/jfx2.0/rt/lib/jfxrt.jar</systemPath>
+        </dependency>
+
+        <!-- JSR303 Bean Validation -->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.2.0.Final</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <finalName>forms</finalName>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <excludeArtifactIds>javafx</excludeArtifactIds>
+                        </configuration>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <executable>java</executable>
+                    <mainClass>com.zenjava.jfxforms.TestFormApplication</mainClass>
+                    <classpathScope>compile</classpathScope>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+
+                                <taskdef name="jfxdeploy"
+                                         classname="com.sun.javafx.tools.ant.DeployFXTask"
+                                         classpathref="maven.plugin.classpath"/>
+
+                                <mkdir dir="${project.build.directory}/dependency"/>
+
+                                <jfxdeploy width="800" height="600"
+                                           outdir="${project.build.directory}/deploy" outfile="${project.build.finalName}">
+                                    <info title="${project.name}"/>
+                                    <application name="${project.name}"
+                                                 mainClass="com.zenjava.jfxforms.TestFormApplication"/>
+                                    <resources>
+                                        <fileset dir="${project.build.directory}" includes="*.jar"/>
+                                        <fileset dir="${project.build.directory}/dependency" includes="*.jar"/>
+                                    </resources>
+                                </jfxdeploy>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun.javafx</groupId>
+                        <artifactId>javafx-ant</artifactId>
+                        <version>2.0.beta</version>
+                        <scope>system</scope>
+                        <systemPath>c:/apps/jfx/jfx2.0/tools/ant-javafx.jar</systemPath>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

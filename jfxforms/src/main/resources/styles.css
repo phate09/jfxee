@@ -1,0 +1,33 @@
+.form-control-bar {
+    -fx-padding: 10;
+    -fx-background-color: #eee;
+    -fx-border-color: #888;
+}
+
+.title {
+    -fx-text-fill: #2365b4;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.validation-summary {
+    -fx-padding: 6;
+    -fx-background-color: #ddd, #ffe;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 4;
+    -fx-text-fill: black;
+}
+
+.error .text-field {
+    -fx-background-color: -fx-shadow-highlight-color, #caa, #fee;
+}
+
+.error .choice-box {
+    -fx-background-color: -fx-shadow-highlight-color, #caa, #caa, #fee;
+}
+
+.submit-success {
+    -fx-text-fill: #090;
+}
+
+
