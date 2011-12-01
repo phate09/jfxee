@@ -47,6 +47,14 @@
             <version>2.2</version>
         </dependency>
 
+        <!-- JSR303 Bean Validation -->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.2.0.Final</version>
+        </dependency>
+
         <!-- JUnit -->
 
         <dependency>

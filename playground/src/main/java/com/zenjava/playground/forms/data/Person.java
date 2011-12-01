@@ -1,11 +1,22 @@
 package com.zenjava.playground.forms.data;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 public class Person implements Serializable
 {
+    @NotNull
     private Gender gender;
+
+    @NotEmpty
+    @Size(min = 2, max = 10)
     private String firstName;
+
+    @NotEmpty
+    @Size(min = 4, max = 10)
     private String lastName;
 
     public Person()

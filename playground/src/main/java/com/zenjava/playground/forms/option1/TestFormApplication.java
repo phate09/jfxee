@@ -19,7 +19,8 @@ public class TestFormApplication extends Application
         PersonForm personForm = new PersonForm();
         root.setCenter(personForm);
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 300, 250);
+        scene.getStylesheets().add("form-styles.css");
         stage.setScene(scene);
         stage.show();
     }
