@@ -85,6 +85,10 @@
                                          classname="com.sun.javafx.tools.ant.DeployFXTask"
                                          classpathref="maven.plugin.classpath"/>
 
+                                <taskdef name="jfxsignjar"
+                                         classname="com.sun.javafx.tools.ant.FXSignJarTask"
+                                         classpathref="maven.plugin.classpath"/>
+
                                 <mkdir dir="${project.build.directory}/dependency"/>
 
                                 <jfxdeploy width="800" height="600"
@@ -97,6 +101,14 @@
                                         <fileset dir="${project.build.directory}/dependency" includes="*.jar"/>
                                     </resources>
                                 </jfxdeploy>
+
+                                <jfxsignjar destdir="${project.build.directory}/deploy"
+                                            keyStore="${project.basedir}/src/main/jnlp/keystore.jks"
+                                            storePass="password"
+                                            alias="webstart"
+                                            keyPass="password">
+                                    <fileset dir="${project.build.directory}/deploy" includes="*.jar"/>
+                                </jfxsignjar>
 
                             </target>
                         </configuration>

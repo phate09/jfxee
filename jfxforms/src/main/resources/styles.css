@@ -4,6 +4,10 @@
     -fx-border-color: #888;
 }
 
+.person-form {
+    -fx-padding: 10;
+}
+
 .title {
     -fx-text-fill: #2365b4;
     -fx-font-size: 20px;
