@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -238,9 +239,16 @@ public class FormManager<BeanType>
     }
     
 
-    public Node registerFormField(String name, Node field)
+    public void registerFormField(String name, Node field)
     {
-        AnnotatedNode annotatedNode = new AnnotatedNode(field);
+        Parent parent = field.getParent();
+        if (!(parent instanceof AnnotatedNode))
+        {
+            throw new IllegalArgumentException(String.format(
+                    "Field '%s' must be contained within an AnnotatedNode to be used on a form", name));
+        }
+
+        AnnotatedNode annotatedNode = (AnnotatedNode) parent;
 
         ImageView marker = new ImageView(new Image(getClass().getResourceAsStream("/exclamation.png")));
         marker.setVisible(false);
@@ -260,7 +268,5 @@ public class FormManager<BeanType>
                 }
             }
         });
-
-        return annotatedNode;
     }
 }

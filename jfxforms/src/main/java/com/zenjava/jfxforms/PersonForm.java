@@ -1,5 +1,6 @@
 package com.zenjava.jfxforms;
 
+import com.zenjava.jfxforms.framework.AnnotatedNode;
 import com.zenjava.jfxforms.framework.FormManager;
 import com.zenjava.jfxforms.framework.HasData;
 import com.zenjava.jfxforms.framework.ValidationSummaryPane;
@@ -122,19 +123,22 @@ public class PersonForm extends VBox implements HasData<Person>
 
         pane.add(new Label("First Name"), 0, row);
         firstNameField = new TextField();
-        pane.add(formManager.registerFormField("firstName", firstNameField), 1, row);
+        pane.add(new AnnotatedNode(firstNameField), 1, row);
+        formManager.registerFormField("firstName", firstNameField);
 
         row++;
 
         pane.add(new Label("Last Name"), 0, row);
         lastNameField = new TextField();
-        pane.add(formManager.registerFormField("lastName", lastNameField),1, row);
+        pane.add(new AnnotatedNode(lastNameField), 1, row);
+        formManager.registerFormField("lastName", lastNameField);
 
         row++;
 
         pane.add(new Label("Gender"), 0, row);
         genderChoiceBox = new ChoiceBox<Gender>(FXCollections.observableArrayList(Gender.values()));
-        pane.add(formManager.registerFormField("gender", genderChoiceBox), 1, row);
+        pane.add(new AnnotatedNode(genderChoiceBox), 1, row);
+        formManager.registerFormField("gender", genderChoiceBox);
 
         return pane;
     }
