@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root"
+      fx:controller="com.zenjava.firstcontact.gui.search.ContactSearchPresenter"
+      spacing="10"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <children>
+
+        <!-- Search Bar -->
+        <HBox spacing="10">
+            <children>
+                <Label text="Search"/>
+                <TextField fx:id="searchField" prefColumnCount="20" onAction="#search"/>
+                <Button text="Search" onAction="#search"/>
+            </children>
+        </HBox>
+
+        <!-- Search Results -->
+        <ListView fx:id="resultsList" VBox.vgrow="ALWAYS"/>
+
+    </children>
+</VBox>
