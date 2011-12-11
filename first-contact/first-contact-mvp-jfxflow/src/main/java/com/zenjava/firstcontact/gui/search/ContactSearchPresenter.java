@@ -103,8 +103,7 @@ public class ContactSearchPresenter extends AbstractActivity implements Initiali
                 }
             }
         });
-
-        new Thread(searchTask).start();
+        executeTask(searchTask);
     }
 
     public void contactSelected(Long contactId)

@@ -92,6 +92,6 @@ public class ContactDetailPresenter extends AbstractActivity
             }
         });
 
-        new Thread(saveTask).start();
+        executeTask(saveTask);
     }
 }
