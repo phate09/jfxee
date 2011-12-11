@@ -5,10 +5,8 @@ import com.zenjava.firstcontact.service.ContactService;
 import com.zenjava.jfxflow.actvity.AbstractActivity;
 import com.zenjava.jfxflow.navigation.NavigationManager;
 import com.zenjava.jfxflow.navigation.PlaceBuilder;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
+import com.zenjava.jfxflow.worker.BackgroundTask;
+import com.zenjava.jfxflow.worker.ErrorHandler;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -30,6 +28,7 @@ public class ContactSearchPresenter extends AbstractActivity implements Initiali
 
     private NavigationManager navigationManager;
     private ContactService contactService;
+    private ErrorHandler errorHandler;
 
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
@@ -76,6 +75,11 @@ public class ContactSearchPresenter extends AbstractActivity implements Initiali
         this.contactService = contactService;
     }
 
+    public void setErrorHandler(ErrorHandler errorHandler)
+    {
+        this.errorHandler = errorHandler;
+    }
+
     protected void activated()
     {
         search(null);
@@ -85,24 +89,18 @@ public class ContactSearchPresenter extends AbstractActivity implements Initiali
     {
         String searchPhrase = searchField.getText();
         final String[] keywords = searchPhrase != null ? searchPhrase.split("\\s+") : null;
-        final Task<List<Contact>> searchTask = new Task<List<Contact>>()
+        final BackgroundTask<List<Contact>> searchTask = new BackgroundTask<List<Contact>>(errorHandler)
         {
             protected List<Contact> call() throws Exception
             {
                 return contactService.searchContacts(keywords);
             }
-        };
 
-        searchTask.stateProperty().addListener(new ChangeListener<Worker.State>()
-        {
-            public void changed(ObservableValue<? extends Worker.State> source, Worker.State oldState, Worker.State newState)
+            protected void onSuccess(List<Contact> results)
             {
-                if (newState.equals(Worker.State.SUCCEEDED))
-                {
-                    resultsList.getItems().setAll(searchTask.getValue());
-                }
+                resultsList.getItems().setAll(results);
             }
-        });
+        };
         executeTask(searchTask);
     }
 

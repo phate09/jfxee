@@ -9,11 +9,14 @@ import com.zenjava.jfxflow.control.Browser;
 import com.zenjava.jfxflow.navigation.DefaultNavigationManager;
 import com.zenjava.jfxflow.navigation.NavigationManager;
 import com.zenjava.jfxflow.navigation.RegexPlaceResolver;
+import com.zenjava.jfxflow.worker.DefaultErrorHandler;
+import com.zenjava.jfxflow.worker.ErrorHandler;
 
 public class FirstContactAppFactory
 {
     private FxmlLoader loader = new FxmlLoader();
     private NavigationManager navigationManager;
+    private ErrorHandler errorHandler;
     private Browser browser;
     private ContactSearchPresenter contactSearchPresenter;
     private ContactDetailPresenter contactDetailPresenter;
@@ -28,6 +31,14 @@ public class FirstContactAppFactory
         return navigationManager;
     }
 
+    public ErrorHandler getErrorHandler()
+    {
+        if (errorHandler == null)
+        {
+            errorHandler = new DefaultErrorHandler();
+        }
+        return errorHandler;
+    }
 
     public Browser getBrowser()
     {
@@ -48,6 +59,7 @@ public class FirstContactAppFactory
             contactSearchPresenter = loader.load("/fxml/ContactSearch.fxml");
             contactSearchPresenter.setContactService(getContactService());
             contactSearchPresenter.setNavigationManager(getNavigationManager());
+            contactSearchPresenter.setErrorHandler(getErrorHandler());
         }
         return contactSearchPresenter;
     }
@@ -59,6 +71,7 @@ public class FirstContactAppFactory
             contactDetailPresenter = loader.load("/fxml/ContactDetail.fxml");
             contactDetailPresenter.setContactService(getContactService());
             contactDetailPresenter.setNavigationManager(navigationManager);
+            contactDetailPresenter.setErrorHandler(getErrorHandler());
         }
         return contactDetailPresenter;
     }
