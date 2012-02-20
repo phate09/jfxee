@@ -72,16 +72,6 @@ public class ContactSearchPresenter implements Initializable
         return root;
     }
 
-    public void setMainPresenter(MainPresenter mainPresenter)
-    {
-        this.mainPresenter = mainPresenter;
-    }
-
-    public void setContactService(ContactService contactService)
-    {
-        this.contactService = contactService;
-    }
-
     public void search(ActionEvent event)
     {
         String searchPhrase = searchField.getText();

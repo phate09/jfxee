@@ -25,16 +25,6 @@ public class ContactDetailPresenter
 
     private Long contactId;
 
-    public void setContactService(ContactService contactService)
-    {
-        this.contactService = contactService;
-    }
-
-    public void setMainPresenter(MainPresenter mainPresenter)
-    {
-        this.mainPresenter = mainPresenter;
-    }
-
     public Node getView()
     {
         return root;
